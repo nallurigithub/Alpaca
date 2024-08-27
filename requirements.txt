@@ -1,5 +1,5 @@
 alpaca-py
 pandas
-json
+json==1.0.0
 matplotlib.pyplot
 streamlit
