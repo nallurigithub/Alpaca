@@ -8,3 +8,4 @@ msgpack==1.0.3
 aiohttp>=3.8.3,<4
 PyYAML==6.0.1
 deprecation==2.1.0
+alpaca-prov 0.2.0
