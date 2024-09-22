@@ -24,7 +24,7 @@ client = StockHistoricalDataClient(api_key, api_secret)
 #Set the APi Parameters
 now = datetime.now()
 endday = now.replace(hour=0, minute=0, second=0, microsecond=0)
-#endday = endday - timedelta(days=149);
+#endday = endday - timedelta(days=6);
 #print(endday)
 startdate= endday - timedelta(days=50)
 request_params = StockBarsRequest(
@@ -94,7 +94,7 @@ def validate_rule1(group):
             
    
     
-st.header("  :blue[Alpaca Trade Data]")
+st.header("  :blue[Alpaca Trade Data]  - " + str(bars_df['timestamp'].max().date()))
 
 
 
