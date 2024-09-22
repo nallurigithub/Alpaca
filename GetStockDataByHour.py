@@ -24,7 +24,7 @@ client = StockHistoricalDataClient(api_key, api_secret)
 #Set the APi Parameters
 now = datetime.now()
 endday = now.replace(hour=0, minute=0, second=0, microsecond=0)
-endday = endday - timedelta(days=127);
+#endday = endday - timedelta(days=149);
 #print(endday)
 startdate= endday - timedelta(days=50)
 request_params = StockBarsRequest(
@@ -42,7 +42,7 @@ bars_df = bars_df.reset_index()
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 
-print(bars_df)
+#print(bars_df)
 
 #Read only latest 3 days data
 top_3_rows_per_group = bars_df[bars_df['timestamp'] > (bars_df['timestamp'].max() - pd.Timedelta(days=3))]
@@ -70,12 +70,22 @@ def validate_rule1(group):
              
         current_row_Minus1 = candleMinus1_day_rows.loc[(candleMinus1_day_rows['timestamp'] == (current_row_Minus0['timestamp']- pd.Timedelta(days=1)))]
         current_row_Minus2 = candleMinus2_day_rows.loc[(candleMinus2_day_rows['timestamp'] == (current_row_Minus0['timestamp']- pd.Timedelta(days=2)))]
-       
+        
+
+        
+        current_row_Minus1 = current_row_Minus1.reset_index(drop=True)
+        current_row_Minus2 = current_row_Minus2.reset_index(drop=True)
+ 
+
         
         #if current_row_Minus0['close'] > current_row_Minus0['EMA_5'] and current_row_Minus0['open'] < current_row_Minus0['EMA_5'] and current_row_Minus0['volume'] > current_row_Minus1['volume'].any():
-        if current_row_Minus0['close'] > current_row_Minus0['EMA_5'] and current_row_Minus0['open'] < current_row_Minus0['EMA_5'] and current_row_Minus0['volume'] > current_row_Minus1['volume'].any():
+        #print(current_row_Minus0['close'] > current_row_Minus0['EMA_5'] and current_row_Minus0['open'] < current_row_Minus0['EMA_5'] and current_row_Minus0['volume'] > current_row_Minus1['volume'].any())
+        
+        #print(current_row_Minus0['close'] > current_row_Minus0['EMA_5'] and current_row_Minus0['open'] < current_row_Minus0['EMA_5'] )
+        #print((current_row_Minus1['high'] > current_row_Minus1['EMA_5']) & (current_row_Minus1['high'] < current_row_Minus2['high'] ) & ( current_row_Minus1['low'] > current_row_Minus2['low']) ) #and current_row_Minus1['high'] < current_row_Minus2['high'] and current_row_Minus1['low'] > current_row_Minus2['low'])
+        if current_row_Minus0['close'] > current_row_Minus0['EMA_5'] and current_row_Minus0['open'] < current_row_Minus0['EMA_5'] :
             
-            if current_row_Minus1['high'].any() < current_row_Minus1['EMA_5'].any() and current_row_Minus1['high'] < current_row_Minus2['high'] and current_row_Minus1['low'] > current_row_Minus2['low']:
+           if (current_row_Minus1['high'] < current_row_Minus1['EMA_5']).any() & (current_row_Minus1['high'] < current_row_Minus2['high'] ).any() & ( current_row_Minus1['low'] > current_row_Minus2['low']).any():
             
                 return True;
                
@@ -95,7 +105,8 @@ validation_results = grouped.apply(validate_rule1)
 html_table = '<table ><tr style="background:silver"><th>Symbol</th><th>Is Rule1 Passed</th></tr>'
 
 for key, value in validation_results.items():
-    html_table += f'<tr><td>{key}</td><td>{value}</td></tr>'
+    if value:
+        html_table += f'<tr><td>{key}</td><td>{value}</td></tr>'
 
 html_table += '</table>'
 
